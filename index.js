@@ -41,13 +41,13 @@ function cellClickHandler(row, col) {
     gameBoard[index] = currentPlayer;
 
     if (checkWinner()) {
-        alert(currentPlayer + ' wins!');
+        alert(currentPlayer + ' Победил!');
         isGameOver = true;
         return;
     }
 
     if (!gameBoard.includes(EMPTY)) {
-        alert("It's a draw!");
+        alert("Победила дружба");
         isGameOver = true;
         return;
     }
@@ -100,6 +100,7 @@ function checkWinner() {
     for (let pattern of winPatterns) {
         const [a, b, c] = pattern;
         if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+            highlightWinningCells(pattern);
             return true;
         }
     }
@@ -107,6 +108,13 @@ function checkWinner() {
     return false;
 }
 
+function highlightWinningCells(pattern) {
+    for (let index of pattern) {
+        const row = Math.floor(index / 3);
+        const col = index % 3;
+        renderSymbolInCell(gameBoard[index], row, col, 'red');
+    }
+}
 /* Test Function */
 /* Победа первого игрока */
 function testWin() {
