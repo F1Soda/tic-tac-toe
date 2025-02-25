@@ -3,7 +3,7 @@ const ZERO = 'O';
 const EMPTY = '';
 
 const container = document.getElementById('fieldWrapper');
-const gridSize = 4;
+const gridSize = Number(prompt("Введи размер поля", 4));
 
 let currentPlayer = CROSS;
 let gameBoard = Array(gridSize * gridSize).fill(EMPTY);
@@ -32,7 +32,7 @@ function renderGrid(dimension) {
 
 function cellClickHandler(row, col) {
     const index = row * gridSize + col;
-    if (gameBoard[index] !== EMPTY || isGameOver) {
+    if (gameBoard[index] !== EMPTY || isGameOver || currentPlayer === ZERO) {
         return;
     }
 
@@ -51,7 +51,34 @@ function cellClickHandler(row, col) {
         return;
     }
 
-    currentPlayer = currentPlayer === CROSS ? ZERO : CROSS;
+    currentPlayer = ZERO;
+    aiMove();
+}
+
+function aiMove() {
+    const emptyIndexes = gameBoard.map((value, index) => value === EMPTY ? index : -1).filter(index => index !== -1);
+    if (emptyIndexes.length === 0) return;
+
+    const randomIndex = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+    const row = Math.floor(randomIndex / gridSize);
+    const col = randomIndex % gridSize;
+
+    renderSymbolInCell(ZERO, row, col);
+    gameBoard[randomIndex] = ZERO;
+
+    if (checkWinner()) {
+        alert(ZERO + ' Победил!');
+        isGameOver = true;
+        return;
+    }
+
+    if (!gameBoard.includes(EMPTY)) {
+        alert("Победила дружба");
+        isGameOver = true;
+        return;
+    }
+
+    currentPlayer = CROSS;
 }
 
 function renderSymbolInCell(symbol, row, col, color = '#333') {
