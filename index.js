@@ -1,11 +1,11 @@
 const CROSS = 'X';
 const ZERO = 'O';
-const EMPTY = '';
+const EMPTY = ' ';
 
 const container = document.getElementById('fieldWrapper');
 
 let currentPlayer = CROSS;
-let gameBoard = ['', '', '', '', '', '', '', '', ''];
+let gameBoard = [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY];
 let isGameOver = false;
 
 startGame();
@@ -74,7 +74,7 @@ function addResetListener() {
 
 function resetClickHandler() {
     console.log('reset!');
-    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    gameBoard = [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY , EMPTY, EMPTY, EMPTY];
     currentPlayer = CROSS;
     isGameOver = false;
 
@@ -98,8 +98,10 @@ function checkWinner() {
     ];
 
     for (let pattern of winPatterns) {
-        const [a, b, c] = pattern;
-        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+        const a = pattern[0];
+        const b = pattern[1];
+        const c = pattern[2];
+        if (gameBoard[a] !== EMPTY && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
             highlightWinningCells(pattern);
             return true;
         }
