@@ -3,21 +3,21 @@ const ZERO = 'O';
 const EMPTY = '';
 
 const container = document.getElementById('fieldWrapper');
+const gridSize = 4;
 
 let currentPlayer = CROSS;
-let gameBoard = ['', '', '', '', '', '', '', '', ''];
+let gameBoard = Array(gridSize * gridSize).fill(EMPTY);
 let isGameOver = false;
 
 startGame();
 addResetListener();
 
 function startGame() {
-    renderGrid(3);
+    renderGrid(gridSize);
 }
 
 function renderGrid(dimension) {
     container.innerHTML = '';
-
     for (let i = 0; i < dimension; i++) {
         const row = document.createElement('tr');
         for (let j = 0; j < dimension; j++) {
@@ -31,13 +31,12 @@ function renderGrid(dimension) {
 }
 
 function cellClickHandler(row, col) {
-    const index = row * 3 + col;
+    const index = row * gridSize + col;
     if (gameBoard[index] !== EMPTY || isGameOver) {
         return;
     }
 
     renderSymbolInCell(currentPlayer, row, col);
-
     gameBoard[index] = currentPlayer;
 
     if (checkWinner()) {
@@ -57,7 +56,6 @@ function cellClickHandler(row, col) {
 
 function renderSymbolInCell(symbol, row, col, color = '#333') {
     const targetCell = findCell(row, col);
-
     targetCell.textContent = symbol;
     targetCell.style.color = color;
 }
@@ -73,8 +71,7 @@ function addResetListener() {
 }
 
 function resetClickHandler() {
-    console.log('reset!');
-    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    gameBoard = Array(gridSize * gridSize).fill(EMPTY);
     currentPlayer = CROSS;
     isGameOver = false;
 
@@ -86,37 +83,33 @@ function resetClickHandler() {
 }
 
 function checkWinner() {
-    const winPatterns = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ];
+    let winPatterns = [];
+
+    for (let i = 0; i < gridSize; i++) {
+        winPatterns.push([...Array(gridSize).keys()].map(j => i * gridSize + j));
+        winPatterns.push([...Array(gridSize).keys()].map(j => j * gridSize + i));
+    }
+
+    winPatterns.push([...Array(gridSize).keys()].map(i => i * (gridSize + 1)));
+    winPatterns.push([...Array(gridSize).keys()].map(i => (i + 1) * (gridSize - 1)));
 
     for (let pattern of winPatterns) {
-        const [a, b, c] = pattern;
-        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+        if (pattern.every(index => gameBoard[index] !== EMPTY && gameBoard[index] === gameBoard[pattern[0]])) {
             highlightWinningCells(pattern);
             return true;
         }
     }
-
     return false;
 }
 
 function highlightWinningCells(pattern) {
     for (let index of pattern) {
-        const row = Math.floor(index / 3);
-        const col = index % 3;
+        const row = Math.floor(index / gridSize);
+        const col = index % gridSize;
         renderSymbolInCell(gameBoard[index], row, col, 'red');
     }
 }
-/* Test Function */
-/* Победа первого игрока */
+
 function testWin() {
     clickOnCell(0, 2);
     clickOnCell(0, 0);
